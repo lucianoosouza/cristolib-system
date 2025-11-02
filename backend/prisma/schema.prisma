@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Parish {
+  id         Int       @id @default(autoincrement())
+  name       String
+  city       String?
+  state      String?
+  communities Community[]
+}
+
+model Community {
+  id        Int       @id @default(autoincrement())
+  name      String
+  parishId  Int
+  parish    Parish    @relation(fields: [parishId], references: [id])
+  dizimistas Dizimista[]
+}
+
+model Dizimista {
+  id          Int          @id @default(autoincrement())
+  name        String
+  family      String?
+  cpf         String?      @unique
+  email       String?
+  phone       String?
+  communityId Int
+  community   Community    @relation(fields: [communityId], references: [id])
+  contributions Contribution[]
+}
+
+model Contribution {
+  id          Int       @id @default(autoincrement())
+  dizimistaId Int
+  dizimista   Dizimista @relation(fields: [dizimistaId], references: [id])
+  amount      Float
+  date        DateTime  @default(now())
+  type        String
+  method      String
+  note        String?
+}
