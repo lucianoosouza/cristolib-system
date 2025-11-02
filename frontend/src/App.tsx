@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Contributions from "./Contributions";
 
 type Dizimista = {
   id: number;
@@ -96,8 +97,11 @@ export default function App(): JSX.Element {
             </ul>
           )}
         </section>
+
+        {/* aqui inserimos o componente de contribuições */}
+        <Contributions />
+
       </div>
     </div>
   );
 }
-  
