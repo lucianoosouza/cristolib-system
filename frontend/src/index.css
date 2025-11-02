@@ -1,0 +1,5 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* deixar sem @apply por compatibilidade com sua versão/ambiente */
