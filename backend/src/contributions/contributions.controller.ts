@@ -24,4 +24,12 @@ export class ContributionsController {
   async create(@Body() body: any) {
     return this.service.create(body);
   }
+    @Get('reports/mass')
+  async reportByMass(@Query('date') date?: string) {
+    if (!date) {
+      return { error: 'query parameter `date` is required (YYYY-MM-DD)' };
+    }
+    return this.service.reportByMass(date);
+  }
+
 }

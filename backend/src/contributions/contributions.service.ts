@@ -67,4 +67,55 @@ export class ContributionsService {
 
     return created;
   }
+    /**
+   * Retorna relatório para uma data de missa (YYYY-MM-DD)
+   * - soma total de ofertas nessa data
+   * - breakdown por denominação (kind, value => total quantity e total value)
+   */
+  async reportByMass(dateStr: string) {
+    if (!dateStr) throw new Error('date required (YYYY-MM-DD)');
+
+    const start = new Date(dateStr + 'T00:00:00');
+    const end = new Date(dateStr + 'T23:59:59.999');
+
+    // pega todas as contribuições com massDate no dia
+    const contributions = await this.prisma.contribution.findMany({
+      where: {
+        massDate: { gte: start, lte: end },
+      },
+      include: { denominations: true },
+    });
+
+    // total geral (soma amounts)
+    const totalGeral = contributions.reduce((s, c) => s + Number(c.amount), 0);
+
+    // agregação por denominação (kind + value)
+    const breakdownMap = new Map<string, { kind: string; value: number; quantity: number; totalValue: number }>();
+
+    for (const c of contributions) {
+      for (const d of c.denominations || []) {
+        const key = `${d.kind}_${d.value}`;
+        const existing = breakdownMap.get(key);
+        const qty = Number(d.quantity);
+        const totVal = Number(d.value) * qty;
+        if (existing) {
+          existing.quantity += qty;
+          existing.totalValue += totVal;
+        } else {
+          breakdownMap.set(key, { kind: d.kind, value: Number(d.value), quantity: qty, totalValue: totVal });
+        }
+      }
+    }
+
+    const breakdown = Array.from(breakdownMap.values()).sort((a,b) => b.totalValue - a.totalValue);
+
+    return {
+      date: dateStr,
+      totalGeral,
+      contributionsCount: contributions.length,
+      breakdown, // array { kind, value, quantity, totalValue }
+      contributions // opcional: lista detalhada (se quiser)
+    };
+  }
+
 }

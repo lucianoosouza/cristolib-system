@@ -1,13 +1,7 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-var config_1 = require("prisma/config");
-exports.default = (0, config_1.defineConfig)({
-    schema: "prisma/schema.prisma",
-    migrations: {
-        path: "prisma/migrations",
-    },
-    engine: "classic",
-    datasource: {
-        url: (0, config_1.env)("DATABASE_URL"),
-    },
-});
+﻿module.exports = {
+  schema: "prisma/schema.prisma",
+  migrations: {
+    path: "prisma/migrations"
+  },
+  // engine pode ficar implícito; se quiser inclua: engine: "classic"
+};
